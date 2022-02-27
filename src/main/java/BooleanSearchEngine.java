@@ -6,18 +6,19 @@ import java.io.File;
 import java.util.*;
 
 public class BooleanSearchEngine implements SearchEngine {
-    private HashMap<String, HashMap<Integer, TreeMap<String, PageEntry>>> index = new HashMap<>();
+    private HashMap<String, HashMap<Integer, HashMap<String, PageEntry>>> index = new HashMap<>();
 
     public BooleanSearchEngine(File pdfsDir) {
         try {
             for (File file : pdfsDir.listFiles()) {
                 var doc = new PdfDocument(new PdfReader(file));
-                HashMap<Integer, TreeMap<String, PageEntry>> tempPage = new HashMap<>();
+                HashMap<Integer, HashMap<String, PageEntry>> tempPage = new HashMap<>();
                 for (int numberPage = 1; numberPage <= doc.getNumberOfPages(); numberPage++) {
                     var text = PdfTextExtractor.getTextFromPage(doc.getPage(numberPage));
                     var words = text.split("\\P{IsAlphabetic}+");
-                    TreeMap<String, PageEntry> tempWord = new TreeMap<>();
+                    HashMap<String, PageEntry> tempWord = new HashMap<>();
                     for (String word : words) {
+                        word = word.toLowerCase();
                         if (tempWord.containsKey(word)) {
                             tempWord.get(word).incrementCount();
                         } else {
@@ -35,9 +36,10 @@ public class BooleanSearchEngine implements SearchEngine {
 
     @Override
     public List<PageEntry> search(String word) {
+        word = word.toLowerCase();
         List<PageEntry> pageEntries = new ArrayList<>();
-        for (Map.Entry<String, HashMap<Integer,  TreeMap<String, PageEntry>>> entryFile : index.entrySet()) {
-            for (Map.Entry<Integer, TreeMap<String, PageEntry>> entryPage : entryFile.getValue().entrySet()) {
+        for (Map.Entry<String, HashMap<Integer,  HashMap<String, PageEntry>>> entryFile : index.entrySet()) {
+            for (Map.Entry<Integer, HashMap<String, PageEntry>> entryPage : entryFile.getValue().entrySet()) {
                 if (entryPage.getValue().containsKey(word)) {
                     pageEntries.add(entryPage.getValue().get(word));
                 }

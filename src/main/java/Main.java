@@ -1,3 +1,4 @@
+import com.cedarsoftware.util.io.JsonWriter;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -32,10 +33,11 @@ public class Main {
                         if (result.size() != 0) {
                             System.out.println(result.size() + " Ok");
                             json = new Gson().toJson(result);
-
+                            System.out.println(JsonWriter.formatJson(json));
                         } else {
                             System.out.println(" null");
                             json = "Ничего не найдено!";
+                            System.out.println(json);
                         }
                         out.println(json);
                     }
